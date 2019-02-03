@@ -49,29 +49,6 @@ Data transformed in flight is ephemeral until it is committed to a pan (with eit
 
 ## Examples
 
-### Access Token
-
-An access token is a JWT sent as an HTTP bearer header.
-
-The access token is acquired through a separate action described in [Port Authentication](#Authentication)
-
-The access token includes the claims as shown, and the subject claim expands to import as an `@initiator` dimension.
-
-  - exp - posix seconds (integer) until this signature expires (no more than 5 minutes from now allowed)   
-  - sub - a unique key for this access token
-  - aud - the expected audience (i.e. the service you are targeting) and the auth has been approved for
-  - for - an array of Polyforms that are allowed
-
-Claim Examples (as JSON):
-
-```json
-{
-  "exp": 1549205284,
-  "sub": "3d5b9891-7b23-4c47-8d4a-48e0d886715a",
-  "aud": "portal.pandim.xyz:443",
-  "for": ["ingress", "transform", "intersect(Decisioning)"]
-}
-```
 
 ### Submit Data
 
@@ -270,6 +247,32 @@ result:
     ]
 }
 ```
+## Authentication
+
+### Access Token
+
+An access token is a JWT sent as an HTTP bearer header.
+
+The access token is acquired through a separate action described in [Port Authentication](#Authentication)
+
+The access token includes the claims as shown, and the subject claim expands to import as an `@initiator` dimension.
+
+  - exp - posix seconds (integer) until this signature expires (no more than 5 minutes from now allowed)   
+  - sub - a unique key for this access token
+  - aud - the expected audience (i.e. the service you are targeting) and the auth has been approved for
+  - for - an array of Polyforms that are allowed
+
+Claim Examples (as JSON):
+
+```json
+{
+  "exp": 1549205284,
+  "sub": "3d5b9891-7b23-4c47-8d4a-48e0d886715a",
+  "aud": "portal.pandim.xyz:443",
+  "for": ["ingress", "transform", "intersect(Decisioning)"]
+}
+```
+
 ## Data formatting
 
 Although shown loosely in these examples, the simple types of data are similar to JSON. You can skip this and go straight to (examples)[#examples].
