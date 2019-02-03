@@ -46,6 +46,12 @@ Data transformed in flight is ephemeral until it is committed to a pan (with eit
 
 ## Examples
 
+Definitions for actions are futher below, such as what a 'dim' is, etc.  Just think of it as:
+- dims = dimensions added at runtime
+- pans = data in the universe (attributed, etc)
+- polyform = function as a service for data science
+
+And a lot of streamed data.
 
 ### Submit Data
 
