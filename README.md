@@ -1,7 +1,7 @@
 
 # Data Universe API
 
-The Data Universe operates differently than one conventionally approaches computing. When you make a db or API call, you are usually coming at it with some data, and asking it to do something more with that datay.
+The Data Universe operates differently than one conventionally approaches computing. When you make a db or API call, you are usually coming at it with some data, and asking it to do something more with that data.
 
 Instead, think of the Data Universe more like a black hole.  You put data into it, and then you interact with it, via Polyforms (which are a construct like a mature function-as-a-service, specifically shaped for native AI purposes).
 
