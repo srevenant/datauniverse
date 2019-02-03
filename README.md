@@ -1,13 +1,27 @@
 
 # Data Universe API
 
-The Data Universe operates differently than one conventionally approaches computing. When you make a db or API call, you are usually coming at it with some data, and asking it to do something more with that data.
+The Data Universe operates differently than one conventionally approaches computing. When you make a db or API call, you come at it with some data, and ask it to do something more with that data.
 
 Instead, think of the Data Universe more like a black hole.  You put data into it, and then you interact with it, via Polyforms (which are a construct like a mature function-as-a-service, specifically shaped for native AI purposes).
 
 To do this, you start with the assumption that the data you need is already in the data universe.
 
-Which means the Data Universe Query Language (DUQL) is simply a way to describe the shape of the data that you want, and then when you invoke the function, the data is gathered together at that moment and the science part (in the function) can use it.
+Then you describe the shape of the data that is gathered from the universe, to invoke the function.
+
+The Polyform Definition (PolyD) has two purposes:
+
+* Defining Polyforms for management, testing and delivery.
+* Providing a ingress and invocation scheme for the API, which in turn supports:
+  * Transforming data in streams.
+  * Launch functions, in a matter where the data may be gathered from the data universe rather than presented at runtime.
+
+Features:
+
+* Pipelining of actions leading to the execution of functions (as either a Polyform or a Transform).
+
+* Data as plasma (transformation and movement).
+
 
 Or more simply put: You describe what the function needs, and when you invoke it, the function gathers this for you, instead of you having to submit it.
 

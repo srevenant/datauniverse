@@ -1,0 +1,50 @@
+scheme: "polyform-1.0"
+polyform: decisioning
+training:
+  dims:
+    - trainer.id: "FACFAF-1FA14D-89FA"
+  gather:
+    - $trainer:csv:latest
+  do transform LoadCsv:
+  do training:
+  store:
+    - $trainer:csv:latest
+
+test:
+  dims:
+  - person.id:   "FACFAF-1FA14D-89FA"
+  - property.id: "B0GP8E-0094E5-ED11"
+  - employer.id: "EA9F28-04555A-41D0"
+  gather:
+  - $person:finsec.ccard.sales
+  - $person:finsec.bankruptcy.score |> as(score)
+  - $person:finsec.fico
+  - $person:finsec.revolving
+  - $person:gross.sales
+  - $person:dib_ownership
+  - $person:dib_establish
+  - $person:dob |> toAge |> as(age)
+  - $person:comp.wage:usd |> toInt |> as(wage)
+  - $employer:employees
+  - $property:location.sqft
+  - $employer:unemployment_ranking
+  - $initiator:trust.of.vendor
+  do intercept:
+  expect:
+  - recommendation.score == 0.995555552
+  - payment.pace:months == 7
+  - suggested.amount:usd == 50102
+
+# this is normally submitted via API, with variables like would be above
+intercept:
+  dims:
+  gather:
+  do intercept:
+  store:
+  - $person:credit[$initiator]:
+    - recommendation.score
+    - payment.pace#months
+    - suggested.amount#usd
+  return:
+    $result:
+    - recommendation.score
