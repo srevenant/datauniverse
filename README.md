@@ -31,46 +31,6 @@ There are a few pre-determined actions (this varies from GraphQL where there are
 * *Pans* - these are items stored in the Data Universe.  All data can be represented by a Pan, and Pans have a unique key mapping system plus key security cryptography to protect it properly.
 * *Dims* - dimensions are added at runtime to help the AI understand the full context of how it should run.  Such as who is requesting, what timeframe, etc.  Pans are also brought in as Dims.  The Polyform is the intersection of the Pans plane of existence, and the Dims plane of existence, at which point the function is run.
 
-### Data formatting
-
-Although shown loosely in these examples, the simple types of data are similar to JSON. You can skip this and go straight to (examples)[#examples].
-
-- `"string"` - a string begins and ends with double quotes
-- `000` - an Int64 number
-- `0.000` - a Float64 number
-- `literal` - these are used within our query system, and only support from the set: `[A-Za-z0-9]`
-- `attribute.name` - attributes are a more complex system, where literals are combined to define a broader name context. Note: dashes nor underscores are supported.  Only periods for delimiters, colon for separator, and a hash for a selector (when there are multiple sub types of a given element, such as currency as usd, eu, etc).
-
-Because attributes can be relative and include data from the overall building context, the syntax also includes things such as:
-- `@namedthing:` - this references `namedthing.id` and it's graphed related items, pulling the key following the colon.
-- `account.balance#usd` - this is a selector, where the value is actually account.balance, but it is provided in us dollars.
-
-Grouping of blocks is with braces `{ }`, but context within the block  and grouping of an array is with square braces `[ ]`, comma delimited.
-
-### Actions
-
-The actions available are not required to be in order, other than the first (sig):
-
-- `access` - access token (see below)
-- `dims` - dimensions specific to this request.  Consider this like the payload section of a JWT.  This is hashed with a pre-shared secret and the hash value is stored in the `sig` block.  The dims should at a minimum include some values in context:
-    - `initiator`.`id` - this maps to the initiator as a pre-defined entity in the universe, to which the pre-shared secret is correlated
-    - `
-
-- `new|into` - create pans around the described information.  If new pans are created, their mapIds are given in the result-set
-- `gather` - gather additional PAN and values from the system (can call other poly's even)
-- `join|union|add as LABEL` - how to bring the data together such that the intersect is expecting things.  The LABEL is used as a key to the function, which points to the data file descriptor for the container to read from.
-    - `join` will create a dataframe array, with each of the gathered pans as a column.
-    - `union` will create a dictionary, with only one key value for each key name (the order of the pans matter--the latter ones taking precedence
-    - `setadd` will create a dataframe array, but only add the pan if it's values are unique within the set (no duplicates)
-- `intersect(name:version)` - run an intersect.  The context describes how to adjust the Pans and Dims into the event used by the intersect.
-- `into` - This immediately follows an intersect, and it adjusts the results from the intersect, adding context as they are converted into PANs and returned to the session.
-- `query` - separate request, specifically calling data
-- `transform(type)` - give raw transform using a different serialized format, such as `transform(handler:version)`.  A polyform(handler) is run to parse the input.  The result-set become pans, and the result is a key:value dictionary that may be pulled into this context with `${key}`.  The context for input is defined with keywords (if one of variables, data or multipart is not specified, assumption is variables):
-    - `contentType` = `"content type"` - optional
-    - `variables` = `true` - pull from the query variables
-    - `data` = `"serialized data"` - this or the next
-    - `multipart` = - TBD: figure out HTTP2/3 multipart submits for data
-    - `encoding` = `"base64"` - for `data` - if undefined assume "none"
 
 ### Data Transforms in Flight
 
@@ -310,3 +270,43 @@ result:
     ]
 }
 ```
+## Data formatting
+
+Although shown loosely in these examples, the simple types of data are similar to JSON. You can skip this and go straight to (examples)[#examples].
+
+- `"string"` - a string begins and ends with double quotes
+- `000` - an Int64 number
+- `0.000` - a Float64 number
+- `literal` - these are used within our query system, and only support from the set: `[A-Za-z0-9]`
+- `attribute.name` - attributes are a more complex system, where literals are combined to define a broader name context. Note: dashes nor underscores are supported.  Only periods for delimiters, colon for separator, and a hash for a selector (when there are multiple sub types of a given element, such as currency as usd, eu, etc).
+
+Because attributes can be relative and include data from the overall building context, the syntax also includes things such as:
+- `@namedthing:` - this references `namedthing.id` and it's graphed related items, pulling the key following the colon.
+- `account.balance#usd` - this is a selector, where the value is actually account.balance, but it is provided in us dollars.
+
+Grouping of blocks is with braces `{ }`, but context within the block  and grouping of an array is with square braces `[ ]`, comma delimited.
+
+### Actions
+
+The actions available are not required to be in order, other than the first (sig):
+
+- `access` - access token (see below)
+- `dims` - dimensions specific to this request.  Consider this like the payload section of a JWT.  This is hashed with a pre-shared secret and the hash value is stored in the `sig` block.  The dims should at a minimum include some values in context:
+    - `initiator`.`id` - this maps to the initiator as a pre-defined entity in the universe, to which the pre-shared secret is correlated
+    - `
+
+- `new|into` - create pans around the described information.  If new pans are created, their mapIds are given in the result-set
+- `gather` - gather additional PAN and values from the system (can call other poly's even)
+- `join|union|add as LABEL` - how to bring the data together such that the intersect is expecting things.  The LABEL is used as a key to the function, which points to the data file descriptor for the container to read from.
+    - `join` will create a dataframe array, with each of the gathered pans as a column.
+    - `union` will create a dictionary, with only one key value for each key name (the order of the pans matter--the latter ones taking precedence
+    - `setadd` will create a dataframe array, but only add the pan if it's values are unique within the set (no duplicates)
+- `intersect(name:version)` - run an intersect.  The context describes how to adjust the Pans and Dims into the event used by the intersect.
+- `into` - This immediately follows an intersect, and it adjusts the results from the intersect, adding context as they are converted into PANs and returned to the session.
+- `query` - separate request, specifically calling data
+- `transform(type)` - give raw transform using a different serialized format, such as `transform(handler:version)`.  A polyform(handler) is run to parse the input.  The result-set become pans, and the result is a key:value dictionary that may be pulled into this context with `${key}`.  The context for input is defined with keywords (if one of variables, data or multipart is not specified, assumption is variables):
+    - `contentType` = `"content type"` - optional
+    - `variables` = `true` - pull from the query variables
+    - `data` = `"serialized data"` - this or the next
+    - `multipart` = - TBD: figure out HTTP2/3 multipart submits for data
+    - `encoding` = `"base64"` - for `data` - if undefined assume "none"
