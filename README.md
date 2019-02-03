@@ -111,7 +111,7 @@ dims {
   property.id = "B0GP8E-0094E5-ED11"
   employer.id = "EA9F28-04555A-41D0"
 } new {
-  @person:fintec.ccard.sales = 20000
+  @person:finsec.ccard.sales = 20000
   @person:gross.sales = 43904
   @person:dib_ownership = 2740
   @person:dib_establish = 2745
@@ -137,7 +137,7 @@ dims {
     \"employees\": {\"0\":52}
   }"
 } into {
-  @person:fintec.ccard.sales = ${ccard-sales} |> dig("0") |> toInt
+  @person:finsec.ccard.sales = ${ccard-sales} |> dig("0") |> toInt
   @person:gross.sales = ${gross_sales} |> dig("0") |> toInt
   @person:dib_ownership = ${dib_ownership} |> dig("0") |> toInt
   @person:dib_establish = ${dib_establish} |> dig("0") |> toInt
@@ -151,7 +151,7 @@ The primary difference between transform and intercept is that transform runs be
 
 An intersection with a polyform is when all of the pans and dimensions come together to run a native AI function.  This is the polyform.
 
-You can chain an intersect immediately after pan creation, but it is not required.
+You can chain an intersect in the same call as pan creation, but it is not required.
 
 ```GraphQL
 dims {
@@ -183,22 +183,118 @@ dims {
   @result {
     recommendation.score
   }
-  @employer:dins
+  @employer:duns
 }
 ```
 Note:
 * update actions in list above.  `return` notably.  This is like a graphql way of scoping which params you want in the result set.  If you do not include a return, it only returns what is included from the `into` as a limited data set.
-* also note: this is how abac kicks in.  I included `@employer:dins` as a way somebody might try to hack and gain more information.  In this case the initiator does not have access to that information, even if the polyform does, and we should decide if it results in a failure, or a smaller result set.  If we created employer:dins as part of this query, then we'd also have access to get it as a result set.
+* also note: this is how abac kicks in.  I included `@employer:duns` as a way somebody might try to hack and gain more information.  In this case the initiator does not have access to that information, even if the polyform does, and we should decide if it results in a failure, or a smaller result set.  If we created employer:duns as part of this query, then we'd also have access to get it as a result set.
 
 ```json
 {
-  "result": [
+  "@result": [
     { "recommendation.score": 0.9959492111,
       "pragma": "no-cache",
       "duid": "DAFV-QFES" }
   ],
-  "employer": []
+  "@employer": []
 }
 ```
 but to query one pan specifically (should this support graphQL querying?)
 
+### More complex example
+
+Let's see an example of both pan creation, a transform poly, and an intersect poly, as one submit:
+
+```GraphQL
+dims {
+  person.id =   "FACFAF-1FA14D-89FA"
+  property.id = "B0GP8E-0094E5-ED11"
+  employer.id = "EA9F28-04555A-41D0"
+} transform(jsonHandler:latest) {
+  data = "{
+    \"ccard-sales\": {\"0\":\"20000.0\"},
+    \"gross_sales\": {\"0\":43904},
+    \"dib_ownership\": {\"0\":\"2740.0\"},
+    \"dib_establish\": {\"0\":\"2745.0416666666665\"},
+    \"employees\": {\"0\":52}
+  }"
+} into {
+  @person:finsec.ccard.sales = ${ccard-sales} |> dig("0") |> toInt
+  @person:gross.sales = ${gross_sales} |> dig("0") |> toInt
+  @person:dib_ownership = ${dib_ownership} |> dig("0") |> toInt
+  @person:dib_establish = ${dib_establish} |> dig("0") |> toInt
+  @employer:employees = ${employees} |> dig("0") |> toInt
+} join as "inputs" {
+  @person:finsec.ccard.sales
+  @person:finsec.bankruptcy.score |> as(score)
+  @person:finsec.fico
+  @person:finsec.revolving
+  @person:gross.sales
+  @person:dib_ownership
+  @person:dib_establish
+  @person:dob |> toAge |> as(age)
+  @person:comp.wage#usd |> toInt |> as(wage)
+  @employer:employees
+  @property:location.sqft
+  @employer:unemployment_ranking
+  @initiator:trust.of.vendor
+} intersect Decisioning(latest) {
+} into {
+  @person:credit[@initiator] = [
+    recommendation.score
+    payment.pace#months
+    suggested.amount#usd
+  ]
+} return {
+  @result {
+    recommendation.score
+  }
+  @person:credit[@initiator]
+  @employer:employees
+}
+```
+
+result:
+
+```json
+{
+    "@employer": [
+        {
+            "duid": "M1FA-EO1S",
+            "employees": 52,
+            "pragma": "no-cache"
+        }
+    ],
+    "@person": [
+        {
+            "credit": {
+                "80GP9E-00B4E5-1DA1": [
+                    {
+                        "duid": "DAFV-QFES",
+                        "pragma": "no-cache",
+                        "recommendation.score": 0.9959492111
+                    },
+                    {
+                        "duid": "SDFV-QE1S",
+                        "payment.pace#months": 9,
+                        "pragma": "no-cache"
+                    },
+                    {
+                        "duid": "EF1S-VVAF",
+                        "pragma": "no-cache",
+                        "suggested.amount#usd": 14122
+                    }
+                ]
+            }
+        }
+    ],
+    "@result": [
+        {
+            "duid": "DAFV-QFES",
+            "pragma": "no-cache",
+            "recommendation.score": 0.9959492111
+        }
+    ]
+}
+```
