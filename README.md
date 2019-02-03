@@ -44,9 +44,6 @@ This is supported within `new`, `into`, `gather`, `join`, `union`, and `setadd`.
 
 Data transformed in flight is ephemeral until it is committed to a pan (with either a `new` or `into` action).
 
-# Notes:
-- cursor to large data sets?  do we want large data set results?
-
 ## Examples
 
 
