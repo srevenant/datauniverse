@@ -1,9 +1,21 @@
 
 # Data Universe API
 
+The Data Universe operates differently than one conventionally approaches computing. When you make a db or API call, you are usually coming at it with some data, and asking it to do something more with that datay.
 
-## MultiverseQL
-Data Universe is called in the API using a syntax similar to [GraphQL](graphql.org), extended for use with the data universe needs - *MultiverseQL* (name tbd).
+Instead, think of the Data Universe more like a black hole.  You put data into it, and then you interact with it, via Polyforms (which are a construct like a mature function-as-a-service, specifically shaped for native AI purposes).
+
+To do this, you start with the assumption that the data you need is already in the data universe.
+
+Which means the Data Universe Query Language (DUQL) is simply a way to describe the shape of the data that you want, and then when you invoke the function, the data is gathered together at that moment and the science part (in the function) can use it.
+
+Or more simply put: You describe what the function needs, and when you invoke it, the function gathers this for you, instead of you having to submit it.
+
+To the polyform, the data is provided as file descriptors, so it just needs to read in what is required.  The polyform also has a more mature structure to support other use cases, such as training, testing, and versioning.
+
+## Data Universe Query Language (DUQL)
+
+Data Universe is called in the API using a syntax similar to [GraphQL](graphql.org), extended for use with the data universe needs.
 
 We start with the same simple syntax as GraphQL, based on a root object:
 
